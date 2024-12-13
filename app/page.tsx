@@ -1,61 +1,9 @@
-import { revalidatePath } from "next/cache";
+import { getComments, submitComment } from "./actions";
 import CommentForm from "./components/CommentForm";
 import CommentList from "./components/CommentList";
-import { Comment } from "@/types";
-import { MindStudio } from "mindstudio";
 
-// Initialize MindStudio client
-const mindstudio = new MindStudio(process.env.MINDSTUDIO_KEY);
-
-// Mock comments database (in-memory)
-const comments: Comment[] = [];
-
-export default function Home() {
-  // Server action for handling comment submission
-  async function submitComment(formData: FormData) {
-    "use server";
-
-    const content = formData.get("content") as string;
-
-    if (!content) {
-      throw new Error("Content is required");
-    }
-
-    const newComment: Comment = {
-      id: Math.random().toString(36).substring(7),
-      content,
-      author: "Anonymous",
-      createdAt: new Date(),
-      isModerated: false,
-    };
-
-    // Moderate the comment content using MindStudio
-    try {
-      const moderationResult =
-        await mindstudio.workers.MindStudioServices.contentModerator({
-          content: newComment.content,
-        });
-
-      newComment.moderationResult = {
-        isApproved: moderationResult.result === "CLEAR",
-        reason: moderationResult.result,
-      };
-      newComment.isModerated = true;
-    } catch (error) {
-      console.error("Moderation failed:", error);
-      newComment.moderationResult = {
-        isApproved: false,
-        reason: "Moderation error",
-      };
-      newComment.isModerated = true;
-    }
-
-    // Add the new comment to the mock database
-    comments.push(newComment);
-
-    // Revalidate the current path to update the page with the new comment
-    revalidatePath("/");
-  }
+export default async function Home() {
+  const comments = await getComments();
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">

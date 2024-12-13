@@ -1,150 +1,85 @@
-# Comment Moderation with MindStudio
+# MindStudio Comment Moderation Demo
 
-A complete example of implementing AI-powered content moderation in a Next.js application using MindStudio. This repository demonstrates how to integrate MindStudio workers into a real web application, from initial setup to deployment.
+A Next.js application demonstrating real-time comment moderation using MindStudio's AI workers. This demo shows how to integrate content moderation into a web application using Server Components.
 
-[Screenshot or GIF of the demo in action]
+## Features
 
-## What You'll Learn
-
-- How to remix and configure a MindStudio content moderation worker
-- Integrating MindStudio workers into a Next.js application
-- Real-time content moderation with visual feedback
-- Best practices for API key management and error handling
+- Real-time comment moderation
+- Server-side AI processing
+- Visual feedback for moderation status
+- TypeScript integration
+- Error handling
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) 18 or newer
-- A [MindStudio](https://mindstudio.ai) account
-- Basic familiarity with Next.js and React
+- Node.js 18 or newer
+- MindStudio account and API key
+- A content moderation worker (remix from [our template](https://app.mindstudio.ai/ais/34ce86d3-7563-4871-84d0-a9c7a05dd90d/remix))
+- Basic familiarity with Next.js
 
-## Setup Guide
+## Setup
 
-### 1. Remix the Content Moderation Worker
-
-1. Visit the [Sample Content Moderation Worker](https://app.mindstudio.ai/ais/content-moderation-a5f7a3a8/remix)
-2. Click "Make a Copy"
-3. Configure your worker settings (or keep the defaults)
-4. Publish your worker
-
-### 2. Get Your API Key
-
-1. Go to your [MindStudio Developer Settings](https://app.mindstudio.ai/workspace/settings/developer?page=api-keys)
-2. Create a new API key or copy an existing one
-
-### 3. Run the Demo Locally
+1. Clone and install:
 
 ```bash
-# Clone the repository
 git clone https://github.com/mindstudio/comment-moderator-demo
 cd comment-moderator-demo
-
-# Install dependencies
 npm install
-
-# Set up environment variables
-cp .env.example .env.local
-# Add your API key to .env.local
 ```
 
-Edit `.env.local`:
+2. Get your API key from [MindStudio Developer Settings](https://app.mindstudio.ai/workspace/settings/developer?page=api-keys)
 
-```
-MINDSTUDIO_KEY=your-api-key-here
-```
+3. Configure environment:
 
 ```bash
-# Start the development server
+cp .env.example .env
+```
+
+Add your MindStudio API key to `.env.local`:
+
+```
+MINDSTUDIO_KEY=your-api-key
+```
+
+4. Initialize MindStudio:
+
+```bash
+npx mindstudio sync
+```
+
+5. Start the development server:
+
+```bash
 npm run dev
 ```
 
-Visit `http://localhost:3000` to see the demo in action!
-
 ## How It Works
 
-This demo implements a simple comment system with real-time moderation:
+The application uses Next.js Server Actions to process comments through MindStudio's AI moderation. Here's the flow:
 
-1. **User submits a comment** through the web interface
-2. **Server processes the submission** using Next.js Server Actions
-3. **MindStudio worker analyzes the content** for appropriateness
-4. **Results are displayed instantly** with visual feedback:
-   - 🟡 Pending moderation
+1. User submits a comment through [`CommentForm`](./app/components/CommentForm.tsx)
+2. The submission is handled by a dedicated server action in [`actions.ts`](./app/actions.ts)
+3. Server processes the submission using MindStudio's worker
+4. Results are displayed in real-time with visual status indicators:
    - 🟢 Approved content
    - 🔴 Rejected content
-
-## Key Implementation Details
-
-### Initializing MindStudio
-
-```typescript
-import { MindStudio } from "mindstudio";
-const mindstudio = new MindStudio(process.env.MINDSTUDIO_KEY);
-```
-
-### Processing Content
-
-```typescript
-const moderationResult = await mindstudio.workers.ContentModerator.checkContent({
-  content: newComment.content,
-});
-```
-
-### Error Handling
-
-```typescript
-try {
-  // Moderation code here
-} catch (error) {
-  if (error instanceof MindStudioError) {
-    console.error('Moderation failed:', error.message);
-  }
-}
-```
 
 ## Project Structure
 
 ```
-comment-moderator-demo/
-├── app/
-│   ├── components/
-│   │   ├── CommentForm.tsx   # Comment submission form
-│   │   └── CommentList.tsx   # Comments display with moderation status
-│   └── page.tsx              # Main page with MindStudio integration
-└── types/
-    └── index.ts              # Type definitions
+app/
+├── actions.ts            # Server-side actions for comment handling
+├── components/
+│   ├── CommentForm.tsx   # Comment submission form
+│   └── CommentList.tsx   # Comments display with moderation status
+├── page.tsx              # Main page component
+└── layout.tsx            # Root layout
 ```
-
-## Customization
-
-### Modifying Moderation Rules
-
-1. Visit your worker in MindStudio
-2. Adjust the moderation parameters
-3. Deploy the changes
-4. Your application will automatically use the updated rules
-
-### Styling
-
-The demo uses Tailwind CSS for styling. Modify `tailwind.config.ts` and component classes to match your design system.
-
-## Deployment
-
-This demo can be deployed to any platform that supports Next.js applications. For the simplest deployment:
-
-1. Push your code to GitHub
-2. Connect your repository to [Vercel](https://vercel.com)
-3. Add your `MINDSTUDIO_KEY` to the environment variables
-4. Deploy!
 
 ## Learn More
 
 - [MindStudio Documentation](https://docs.mindstudio.ai)
-- [Worker Templates](https://mindstudio.ai/workers/templates)
-- [API Reference](https://docs.mindstudio.ai/api)
 - [Next.js Documentation](https://nextjs.org/docs)
-
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 ## License
 
