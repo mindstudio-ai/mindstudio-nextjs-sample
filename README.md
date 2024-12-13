@@ -16,6 +16,12 @@ A Next.js application demonstrating how to integrate MindStudio's AI workers int
 - MindStudio account and API key
 - Basic familiarity with Next.js
 
+## Copy the Worker
+
+1. Visit [Content Moderator Worker Sample](https://app.mindstudio.ai/ais/34ce86d3-7563-4871-84d0-a9c7a05dd90d/remix)
+2. Click "Make a Copy" to create your own instance of the worker
+3. The worker will now be available in your MindStudio workspace for use with this sample
+
 ## Setup
 
 1. Clone and install:
